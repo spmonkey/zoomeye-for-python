@@ -13,7 +13,7 @@ def main_domain(domain):
 
 
 if __name__ == '__main__':
-    try:
+#     try:
         if sys.argv[1] == "-h" or sys.argv[1] == "--help":
             raise SystemExit("""
     {0} usage : python main.py
@@ -28,11 +28,11 @@ if __name__ == '__main__':
             main_web(lib.zoomeye.webscan())
         elif sys.argv[1] == "-d" or sys.argv[1] == "--domain":
             main_domain(lib.zoomeye.domain())
-    except:
-        print("""
-{0} usage : python main.py
-    -h --help      View the user manual
-    -w --webscan   Performing Web asset Collection
-    -d --domain    Performing Host asset Collection
-    -u --user_info Check the user's total quota
-    """.format(sys.argv[0]))
+#     except:
+#         print("""
+# {0} usage : python main.py
+#     -h --help      View the user manual
+#     -w --webscan   Performing Web asset Collection
+#     -d --domain    Performing Host asset Collection
+#     -u --user_info Check the user's total quota
+#     """.format(sys.argv[0]))
