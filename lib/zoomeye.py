@@ -89,7 +89,7 @@ def domain():
                 os.mkdir('domainscan')
             with open('domainscan/domainscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
                 w.write(domainscan.text)
-        return "主机资产收集完成！请开始您的渗透之旅吧~"
+        return "域名 / IP资产收集完成！请开始您的渗透之旅吧~"
     else:
         return "您的额度不够，请充值或更换账号！"
         pass
