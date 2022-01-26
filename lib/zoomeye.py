@@ -5,7 +5,7 @@ import requests
 import re, os, time
 from tqdm import tqdm
 
-
+# headers = {'API-KEY': 'BC809B8F-B7De-7EDCF-Ec00-18d7a94f310'}
 search_info_num = []
 # 用户
 '''
@@ -42,14 +42,6 @@ def webscan(headers):
         else:
             page = page
         web_scan = 'https://api.zoomeye.org/web/search?'
-        query = 'query=' + input("""
-请输入查询关键词(必填，例子 : app:"DedeCMS" +country:"CN")：""")
-        while True:
-            if query == 'query=':
-                query = 'query=' + input("""
-请输入查询关键词(必填，例子 : app:"DedeCMS" +country:"CN")：""")
-            else:
-                break
         facets = 'facets=' + input("""
 支持的统计项：webapp(web应用),component(web容器),framework(web框架),frontend(前端组件),server(web服务器),waf(web防火墙),os(操作系统),country(国家),city(城市)
 请输入统计项(可选，用,隔开，例子：app,os)：""")
@@ -57,28 +49,32 @@ def webscan(headers):
             facets = ''
         else:
             facets = facets
-        for i in range(1, page + 1):
-            page = str(i)
-            urls = web_scan + query + '&' + 'page=' + page + '&' + facets
-            print(urls)
-            webscan = requests.get(url=urls,headers=headers)
-            webscan.encoding = 'utf-8'
-            if webscan.status_code == 200:
-                isExists_dir = os.path.exists('webscan')
-                isExists_file = os.path.exists('webscan/webscan{0}.json'.format(i))
-                if isExists_dir == True:
-                    if isExists_file == True:
-                        os.remove('webscan/webscan{0}.json'.format(i))
-                    pass
-                else:
-                    os.mkdir('webscan')
-                for j in tqdm(range(100)):
-                    with open('webscan/webscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
-                        time.sleep(0.1)
-                        w.write(webscan.text)
-                print("")
-            else:
-                return "缺少参数哦！"
+        with open("./lib/cms.txt", "r", encoding="utf-8") as file:
+            for files in file.readlines():
+                cms = files.split("\n")
+                query = 'query=' + cms[0]
+                print("正在收集{0}的资产".format(cms[0]))
+                for i in range(1, int(page) + 1):
+                    page = str(i)
+                    urls = web_scan + query + '&' + 'page=' + page + '&' + facets
+                    webscan = requests.get(url=urls,headers=headers)
+                    webscan.encoding = 'utf-8'
+                    if webscan.status_code == 200:
+                        isExists_dir = os.path.exists('webscan/{0}'.format(cms[0]))
+                        isExists_file = os.path.exists('webscan/{0}/{0}{1}.json'.format(cms[0], i))
+                        if isExists_dir == True:
+                            if isExists_file == True:
+                                os.remove('webscan/{0}/{0}{1}.json'.format(cms[0], i))
+                            pass
+                        else:
+                            os.mkdir('webscan/{0}'.format(cms[0]))
+                        for j in tqdm(range(100)):
+                            with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'a+', encoding='utf-8') as w:
+                                time.sleep(0.1)
+                                w.write(webscan.text)
+                        print("")
+                    else:
+                        return "缺少参数哦！"
         return "web资产收集完成！请开始您的渗透之旅吧~"
     else:
         return "您的额度不够，请充值或更换账号！"
@@ -104,7 +100,7 @@ def domain(headers):
         type = 'type=' + input("""
 0：搜索关联域名，1：搜索子域名
 请输入类型(必填，类型有：0 或 1)：""")
-        for i in range(1, page+1):
+        for i in range(1, int(page) + 1):
             page = str(i)
             urls = domain_scan + q + '&' + 'page=' + page + '&' + type
             domainscan = requests.get(url=urls,headers=headers)
