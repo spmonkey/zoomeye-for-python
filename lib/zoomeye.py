@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import sys
-
 import requests
 import re, os, time
 from tqdm import tqdm
+
 
 search_info_num = []
 # 用户
@@ -59,14 +59,18 @@ def webscan(headers):
                     webscan = requests.get(url=urls,headers=headers)
                     webscan.encoding = 'utf-8'
                     if webscan.status_code == 200:
-                        isExists_dir = os.path.exists('webscan/{0}'.format(cms[0]))
-                        isExists_file = os.path.exists('webscan/{0}/{0}{1}.json'.format(cms[0], i))
+                        isExists_dir = os.path.exists('webscan')
+                        isExists_dir_dir = os.path.exists('./webscan/{0}'.format(cms[0]))
+                        isExists_file = os.path.exists('./webscan/{0}/{0}{1}.json'.format(cms[0], i))
                         if isExists_dir == True:
-                            if isExists_file == True:
-                                os.remove('webscan/{0}/{0}{1}.json'.format(cms[0], i))
-                            pass
+                            if isExists_dir_dir == True:
+                                if isExists_file == True:
+                                    os.remove('webscan/{0}/{0}{1}.json'.format(cms[0], i))
+                                pass
+                            else:
+                                os.mkdir('./webscan/{0}'.format(cms[0]))
                         else:
-                            os.mkdir('webscan/{0}'.format(cms[0]))
+                            os.mkdir('webscan')
                         for j in tqdm(range(100)):
                             with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'a+', encoding='utf-8') as w:
                                 time.sleep(0.1)
@@ -86,7 +90,7 @@ def domain(headers):
     user_info(headers)
     remain_total_quota = int(search_info_num[0])
     if int(remain_total_quota) > 0:
-        print("\n欢迎使用spmonkey的资产收集工具\n")
+        print(remain_total_quota)
         print("可以进行下一步操作！")
         page = input("请输入需要爬取的页数(可选，默认为 1)：")
         if page == '':
@@ -130,7 +134,7 @@ def host(headers):
     user_info(headers)
     remain_total_quota = int(search_info_num[0])
     if int(remain_total_quota) > 0:
-        print("\n欢迎使用spmonkey的资产收集工具\n")
+        print(remain_total_quota)
         print("可以进行下一步操作！")
         page = input("请输入需要爬取的页数(可选，默认为 1)：")
         if page == '':
@@ -190,5 +194,3 @@ def host(headers):
     else:
         return "您的额度不够，请充值或更换账号！"
         pass
-    
-    
