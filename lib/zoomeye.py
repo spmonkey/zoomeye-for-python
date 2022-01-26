@@ -1,6 +1,10 @@
 #!/usr/bin/python3
-import requests, tqdm
-import re, os, shutil
+import sys
+
+import requests
+import re, os, time
+from tqdm import tqdm
+
 
 search_info_num = []
 # 用户
@@ -34,9 +38,9 @@ def webscan(headers):
         print("可以进行下一步操作！")
         page = input("请输入需要爬取的页数(可选，默认为 1)：")
         if page == '':
-            pages = 1
+            page = 1
         else:
-            pages = page
+            page = page
         web_scan = 'https://api.zoomeye.org/web/search?'
         query = 'query=' + input("""
 请输入查询关键词(必填，例子 : app:"DedeCMS" +country:"CN")：""")
@@ -53,9 +57,9 @@ def webscan(headers):
             facets = ''
         else:
             facets = facets
-        for i in range(1, pages+1):
-            pages = 'page=' + str(i)
-            urls = web_scan + query + '&' + pages + '&' + facets
+        for i in range(1, page + 1):
+            page = str(i)
+            urls = web_scan + query + '&' + 'page=' + page + '&' + facets
             print(urls)
             webscan = requests.get(url=urls,headers=headers)
             webscan.encoding = 'utf-8'
@@ -68,8 +72,11 @@ def webscan(headers):
                     pass
                 else:
                     os.mkdir('webscan')
-                with open('webscan/webscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
-                    w.write(webscan.text)
+                for j in tqdm(range(100)):
+                    with open('webscan/webscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
+                        time.sleep(0.1)
+                        w.write(webscan.text)
+                print("")
             else:
                 return "缺少参数哦！"
         return "web资产收集完成！请开始您的渗透之旅吧~"
@@ -88,18 +95,18 @@ def domain(headers):
         print("可以进行下一步操作！")
         page = input("请输入需要爬取的页数(可选，默认为 1)：")
         if page == '':
-            pages = 1
+            page = 1
         else:
-            pages = page
+            page = page
         domain_scan = 'https://api.zoomeye.org/domain/search?'
         q = 'q=' + input("""
 请输入查询关键字(必填，例子：baidu.com)：""")
         type = 'type=' + input("""
 0：搜索关联域名，1：搜索子域名
 请输入类型(必填，类型有：0 或 1)：""")
-        for i in range(1, pages+1):
-            page = 'page=' + str(i)
-            urls = domain_scan + q + '&' + page + '&' + type
+        for i in range(1, page+1):
+            page = str(i)
+            urls = domain_scan + q + '&' + 'page=' + page + '&' + type
             domainscan = requests.get(url=urls,headers=headers)
             domainscan.encoding = "utf-8"
             isExists_dir = os.path.exists('domainscan')
@@ -110,8 +117,11 @@ def domain(headers):
                 pass
             else:
                 os.mkdir('domainscan')
-            with open('domainscan/domainscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
-                w.write(domainscan.text)
+            for j in tqdm(range(100)):
+                with open('domainscan/domainscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
+                    time.sleep(0.1)
+                    w.write(domainscan.text)
+            print("")
         return "域名 / IP资产收集完成！请开始您的渗透之旅吧~"
     else:
         return "您的额度不够，请充值或更换账号！"
@@ -127,37 +137,37 @@ def host(headers):
     if int(remain_total_quota) > 0:
         print(remain_total_quota)
         print("可以进行下一步操作！")
-        page = input("请输入需要爬取的页数(默认为 1)：")
+        page = input("请输入需要爬取的页数(可选，默认为 1)：")
         if page == '':
-            pages = 1
+            page = 1
         else:
-            pages = page
+            page = page
         hostscan_scan = 'https://api.zoomeye.org/host/search?'
         query = 'query=' + input("""
-请输入查询关键字(例子：port:80 nginx)：""")
+请输入查询关键字(必填，例子：port:80 nginx)：""")
         while True:
             if query == 'query=':
                 query = 'query=' + input("""
-请输入查询关键字(例子：port:80 nginx)：""")
+请输入查询关键字(必填，例子：port:80 nginx)：""")
             else:
                 break
         facets = 'facets=' + input("""
 支持的统计项：app(应用),device(设备类型),service(服务类型),port(端口号),os(操作系统),country(国家),city(城市)
-请输入统计项(用,隔开，例子：app,os)：""")
+请输入统计项(可选，用,隔开，例子：app,os)：""")
         if facets == '':
             facets = ''
         else:
             facets = facets
         sub_type = input("""
 数据类型：ipv4,ipv6
-请输入数据类型(例子：sub_type:v4): """)
+请输入数据类型(可选，例子：sub_type:v4): """)
         if sub_type == '':
             sub_types = 'sub_type:ipv4,ipv6'
         else:
             sub_types = sub_type
-        for i in range(1, pages + 1):
-            page = 'page=' + str(i)
-            urls = hostscan_scan + query + '&' + page + '&' + facets + '&' + sub_types
+        for i in range(1, int(page) + 1):
+            page = str(i)
+            urls = hostscan_scan + query + '&' + 'page=' + page + '&' + facets + '&' + sub_types
             hostscan = requests.get(url=urls, headers=headers)
             hostscan.encoding = "utf-8"
             if hostscan.status_code == 200:
@@ -169,14 +179,17 @@ def host(headers):
                     pass
                 else:
                     os.mkdir('hostscan')
-                with open('hostscan/hostscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
-                    w.write(hostscan.text)
+                for j in tqdm(range(100)):
+                    with open('hostscan/hostscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
+                        time.sleep(0.1)
+                        w.write(hostscan.text)
+                print("")
             elif hostscan.status_code == 500:
                 errors = re.findall('"error": "(.+?)"',hostscan.text)
                 for error in errors:
                     return error
             else:
-                return '缺少参数哦！x'
+                return '缺少参数哦! '
 
         return "主机设备资产收集完成！请开始您的渗透之旅吧~"
     else:
