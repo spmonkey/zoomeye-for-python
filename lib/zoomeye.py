@@ -5,7 +5,6 @@ import requests
 import re, os, time
 from tqdm import tqdm
 
-# headers = {'API-KEY': 'BC809B8F-B7De-7EDCF-Ec00-18d7a94f310'}
 search_info_num = []
 # 用户
 '''
