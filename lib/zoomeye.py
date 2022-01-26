@@ -60,6 +60,7 @@ def webscan(headers):
                     webscan = requests.get(url=urls,headers=headers)
                     webscan.encoding = 'utf-8'
                     if webscan.status_code == 200:
+                        web = re.sub('"raw_data": "(.+?)", ', "", webscan.text)
                         isExists_dir = os.path.exists('webscan')
                         isExists_dir_dir = os.path.exists('./webscan/{0}'.format(cms[0]))
                         isExists_file = os.path.exists('./webscan/{0}/{0}{1}.json'.format(cms[0], i))
