@@ -34,7 +34,7 @@ def webscan(headers):
     user_info(headers)
     remain_total_quota = int(search_info_num[0])
     if remain_total_quota > 0:
-        print(remain_total_quota)
+        print("\n欢迎使用spmonkey的资产收集工具\n")
         print("可以进行下一步操作！")
         page = input("请输入需要爬取的页数(可选，默认为 1)：")
         if page == '':
@@ -87,7 +87,7 @@ def domain(headers):
     user_info(headers)
     remain_total_quota = int(search_info_num[0])
     if int(remain_total_quota) > 0:
-        print(remain_total_quota)
+        print("\n欢迎使用spmonkey的资产收集工具\n")
         print("可以进行下一步操作！")
         page = input("请输入需要爬取的页数(可选，默认为 1)：")
         if page == '':
@@ -131,7 +131,7 @@ def host(headers):
     user_info(headers)
     remain_total_quota = int(search_info_num[0])
     if int(remain_total_quota) > 0:
-        print(remain_total_quota)
+        print("\n欢迎使用spmonkey的资产收集工具\n")
         print("可以进行下一步操作！")
         page = input("请输入需要爬取的页数(可选，默认为 1)：")
         if page == '':
