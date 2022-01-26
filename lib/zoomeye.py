@@ -44,6 +44,7 @@ def webscan(headers):
         facets = 'facets=' + input("""
 支持的统计项：webapp(web应用),component(web容器),framework(web框架),frontend(前端组件),server(web服务器),waf(web防火墙),os(操作系统),country(国家),city(城市)
 请输入统计项(可选，用,隔开，例子：app,os)：""")
+        print("")
         if facets == '':
             facets = ''
         else:
