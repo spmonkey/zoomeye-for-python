@@ -52,7 +52,7 @@ def webscan(headers):
             for files in file.readlines():
                 cms = files.split("\n")
                 query = 'query=' + cms[0]
-                print("正在收集{0}的资产".format(cms[0]))
+                print("正在收集{0}的资产，并整理URL！".format(cms[0]))
                 for i in range(1, int(page) + 1):
                     page = str(i)
                     urls = web_scan + query + '&' + 'page=' + page + '&' + facets
@@ -81,7 +81,6 @@ def webscan(headers):
                         with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'a+', encoding='utf-8') as w:
                             time.sleep(0.1)
                             w.write(web)
-                        print("正在整理URL！")
                         time.sleep(0.5)
                         if urls == []:
                             with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'r+', encoding='utf-8') as f:
