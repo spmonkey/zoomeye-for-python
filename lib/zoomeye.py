@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import sys
 import requests
 import re, os, time
 from tqdm import tqdm
@@ -61,22 +60,43 @@ def webscan(headers):
                     webscan.encoding = 'utf-8'
                     if webscan.status_code == 200:
                         web = re.sub('"raw_data": "(.+?)", ', "", webscan.text)
+                        urls = re.findall('"url": "(.+?)",', web)
                         isExists_dir = os.path.exists('webscan')
                         isExists_dir_dir = os.path.exists('./webscan/{0}'.format(cms[0]))
                         isExists_file = os.path.exists('./webscan/{0}/{0}{1}.json'.format(cms[0], i))
+                        isExists_txt = os.path.exists('./webscan/{0}/url{1}.txt'.format(cms[0], i))
                         if isExists_dir == True:
                             if isExists_dir_dir == True:
-                                if isExists_file == True:
+                                if isExists_file == True and isExists_txt == True:
                                     os.remove('webscan/{0}/{0}{1}.json'.format(cms[0], i))
-                                pass
+                                    os.remove('webscan/{0}/url{1}.txt'.format(cms[0], i))
+                                elif isExists_file == True and isExists_txt == False:
+                                    os.remove('webscan/{0}/{0}{1}.json'.format(cms[0], i))
+                                else:
+                                    pass
                             else:
                                 os.mkdir('./webscan/{0}'.format(cms[0]))
                         else:
                             os.mkdir('webscan')
-                        for j in tqdm(range(100)):
-                            with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'a+', encoding='utf-8') as w:
-                                time.sleep(0.1)
-                                w.write(webscan.text)
+                        with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'a+', encoding='utf-8') as w:
+                            time.sleep(0.1)
+                            w.write(web)
+                        print("正在整理URL！")
+                        time.sleep(0.5)
+                        if urls == []:
+                            with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'r+', encoding='utf-8') as f:
+                                for file in f.readlines():
+                                    ips = re.findall('"ip": \["(.+?)"],', file)
+                                    for x in tqdm(range(len(ips))):
+                                        with open('webscan/{0}/url{1}.txt'.format(cms[0], i), 'a+', encoding='utf-8') as w_f:
+                                                w_f.write("{0}\n".format(ips[x]))
+                        else:
+                                with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'r+', encoding='utf-8') as f:
+                                    for file in f.readlines():
+                                        url_list = re.findall('"url": "(.+?)",', file)
+                                        for x in tqdm(range(len(url_list))):
+                                            with open('webscan/{0}/url{1}.txt'.format(cms[0], i), 'a+', encoding='utf-8') as w_f:
+                                                w_f.write("{0}\n".format(url_list[x]))
                         print("")
                     else:
                         return "缺少参数哦！"
