@@ -44,4 +44,5 @@ usage : python {0}
     -w --webscan   Performing Web asset Collection
     -d --domain    Performing Host asset Collection
     -u --user_info Check the user's total quota
+    --host         Host Device Search
     """.format(sys.argv[0]))
