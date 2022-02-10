@@ -15,6 +15,7 @@ def main_host(host):
     print(host)
 
 if __name__ == '__main__':
+    headers = {'API-KEY': input("请输入您的API-KEY：")}
     try:
         if sys.argv[1] == "-h" or sys.argv[1] == "--help":
             raise SystemExit("""
@@ -26,16 +27,12 @@ usage : python {0}
     --host         Host Device Search
     """.format(sys.argv[0]))
         elif sys.argv[1] == "-u" or sys.argv[1] == "--user_info":
-            headers = {'API-KEY': input("请输入您的API-KEY：")}
             main_user(lib.zoomeye.user_info(headers))
         elif sys.argv[1] == "-w" or sys.argv[1] == "--webscan":
-            headers = {'API-KEY': input("请输入您的API-KEY：")}
             main_web(lib.zoomeye.webscan(headers))
         elif sys.argv[1] == "-d" or sys.argv[1] == "--domain":
-            headers = {'API-KEY': input("请输入您的API-KEY：")}
             main_domain(lib.zoomeye.domain(headers))
         elif sys.argv[1] == "--host":
-            headers = {'API-KEY': input("请输入您的API-KEY：")}
             main_host(lib.zoomeye.host(headers))
     except IndexError:
         print("""
