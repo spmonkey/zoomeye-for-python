@@ -48,57 +48,151 @@ def webscan(headers):
             facets = ''
         else:
             facets = facets
-        with open("./lib/cms.txt", "r", encoding="utf-8") as file:
-            for files in file.readlines():
-                cms = files.split("\n")
-                query = 'query=' + cms[0]
-                print("正在收集{0}的资产，并整理URL！".format(cms[0]))
-                for i in range(1, int(page) + 1):
-                    page = str(i)
-                    urls = web_scan + query + '&' + 'page=' + page + '&' + facets
-                    webscan = requests.get(url=urls,headers=headers)
-                    webscan.encoding = 'utf-8'
-                    if webscan.status_code == 200:
-                        web = re.sub('"raw_data": "(.+?)", ', "", webscan.text)
-                        urls = re.findall('"url": "(.+?)",', web)
+        query = input("""
+请输入搜索关键词(必填，例子:app:"DedeCMS")：""")
+        while True:
+                if query == '':
+                    query = input("""
+请输入搜索关键词(必填，例子:app:"DedeCMS")：""")
+                else:
+                    break
+        r = re.findall('app:"(.+?)"', query)
+        if r == []:
+            print("正在收集{0}的资产，并整理URL！".format(query))
+            for i in range(1, int(page) + 1):
+                page = str(i)
+                urls = web_scan + 'query=' + query + '&' + 'page=' + page + '&' + facets
+                webscan = requests.get(url=urls,headers=headers)
+                webscan.encoding = 'utf-8'
+                if webscan.status_code == 200:
+                    web = re.sub('"raw_data": "(.+?)", ', "", webscan.text)
+                    urls = re.findall('"url": "(.+?)",', web)
+                    if query == '"/seller.php?s=/Public/login"':
                         isExists_dir = os.path.exists('webscan')
-                        isExists_dir_dir = os.path.exists('./webscan/{0}'.format(cms[0]))
-                        isExists_file = os.path.exists('./webscan/{0}/{0}{1}.json'.format(cms[0], i))
-                        isExists_txt = os.path.exists('./webscan/{0}/url{1}.txt'.format(cms[0], i))
+                        isExists_dir_dir = os.path.exists('./webscan/lionfishcms')
                         if isExists_dir == True:
                             if isExists_dir_dir == True:
-                                if isExists_file == True and isExists_txt == True:
-                                    os.remove('webscan/{0}/{0}{1}.json'.format(cms[0], i))
-                                    os.remove('webscan/{0}/url{1}.txt'.format(cms[0], i))
-                                elif isExists_file == True and isExists_txt == False:
-                                    os.remove('webscan/{0}/{0}{1}.json'.format(cms[0], i))
+                                for i in os.listdir('webscan/lionfishcms'):
+                                    file_data = 'webscan/lionfishcms' + '\\' + i
+                                    if os.path.isfile(file_data) == True:
+                                        os.remove(file_data)
                                 else:
                                     pass
                             else:
-                                os.mkdir('./webscan/{0}'.format(cms[0]))
+                                if query == '"/seller.php?s=/Public/login"':
+                                    os.mkdir('./webscan/lionfishcms')
                         else:
                             os.mkdir('webscan')
-                        with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'a+', encoding='utf-8') as w:
+                        with open('webscan/lionfishcms/lionfishcms{0}.json'.format(i), 'a+', encoding='utf-8') as w:
                             time.sleep(0.1)
                             w.write(web)
                         time.sleep(0.5)
                         if urls == []:
-                            with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'r+', encoding='utf-8') as f:
+                            with open('webscan/lionfishcms/lionfishcms{0}.json'.format(i), 'r+', encoding='utf-8') as f:
                                 for file in f.readlines():
                                     ips = re.findall('"ip": \["(.+?)"],', file)
                                     for x in tqdm(range(len(ips))):
-                                        with open('webscan/{0}/url{1}.txt'.format(cms[0], i), 'a+', encoding='utf-8') as w_f:
+                                        with open('webscan/lionfishcms/url{0}.txt'.format(i), 'a+', encoding='utf-8') as w_f:
                                                 w_f.write("{0}\n".format(ips[x]))
                         else:
-                                with open('webscan/{0}/{0}{1}.json'.format(cms[0], i), 'r+', encoding='utf-8') as f:
+                                with open('webscan/lionfishcms/lionfishcms{0}.json'.format(i), 'r+', encoding='utf-8') as f:
                                     for file in f.readlines():
                                         url_list = re.findall('"url": "(.+?)",', file)
                                         for x in tqdm(range(len(url_list))):
-                                            with open('webscan/{0}/url{1}.txt'.format(cms[0], i), 'a+', encoding='utf-8') as w_f:
+                                            with open('webscan/lionfishcms/url{0}.txt'.format(i), 'a+', encoding='utf-8') as w_f:
                                                 w_f.write("{0}\n".format(url_list[x]))
                         print("")
                     else:
-                        return "缺少参数哦！"
+                        isExists_dir = os.path.exists('webscan')
+                        isExists_dir_dir = os.path.exists('./webscan/{0}'.format(query))
+                        isExists_file = os.path.exists('./webscan/{0}/{0}{1}.json'.format(query, i))
+                        isExists_txt = os.path.exists('./webscan/{0}/url{1}.txt'.format(query, i))
+                        if isExists_dir == True:
+                            if isExists_dir_dir == True:
+                                if isExists_file == True and isExists_txt == True:
+                                    os.remove('webscan/{0}/{0}{1}.json'.format(query, i))
+                                    os.remove('webscan/{0}/url{0}{1}.txt'.format(query, i))
+                                elif isExists_file == True and isExists_txt == False:
+                                    os.remove('webscan/{0}/{0}{1}.json'.format(query, i))
+                                else:
+                                    pass
+                            else:
+                                    os.mkdir('./webscan/{0}'.format(query))
+                        else:
+                            os.mkdir('webscan')
+                        with open('webscan/{0}/{0}{1}.json'.format(query, i), 'a+', encoding='utf-8') as w:
+                            time.sleep(0.1)
+                            w.write(web)
+                        time.sleep(0.5)
+                        if urls == []:
+                            with open('webscan/{0}/{0}{1}.json'.format(query, i), 'r+', encoding='utf-8') as f:
+                                for file in f.readlines():
+                                    ips = re.findall('"ip": \["(.+?)"],', file)
+                                    for x in tqdm(range(len(ips))):
+                                        with open('webscan/{0}/url{1}.txt'.format(query, i), 'a+',
+                                                  encoding='utf-8') as w_f:
+                                            w_f.write("{0}\n".format(ips[x]))
+                        else:
+                            with open('webscan/{0}/{0}{1}.json'.format(query, i), 'r+', encoding='utf-8') as f:
+                                for file in f.readlines():
+                                    url_list = re.findall('"url": "(.+?)",', file)
+                                    for x in tqdm(range(len(url_list))):
+                                        with open('webscan/{0}/url{1}.txt'.format(query, i), 'a+',
+                                                  encoding='utf-8') as w_f:
+                                            w_f.write("{0}\n".format(url_list[x]))
+                        print("")
+                else:
+                    return "缺少参数哦！"
+        else:
+            print("正在收集{0}的资产，并整理URL！".format(r[0]))
+        # with open("./lib/cms.txt", "r", encoding="utf-8") as file:
+        #     for files in file.readlines():
+        #         cms = files.split("\n")
+        #         query = 'query={0}'.format(cms[0])
+        #         print("正在收集{0}的资产，并整理URL！".format(cms[0]))
+            for i in range(1, int(page) + 1):
+                page = str(i)
+                urls = web_scan + 'query=' + query + '&' + 'page=' + page + '&' + facets
+                webscan = requests.get(url=urls,headers=headers)
+                webscan.encoding = 'utf-8'
+                if webscan.status_code == 200:
+                    web = re.sub('"raw_data": "(.+?)", ', "", webscan.text)
+                    urls = re.findall('"url": "(.+?)",', web)
+                    isExists_dir = os.path.exists('webscan')
+                    isExists_dir_dir = os.path.exists('./webscan/{0}'.format(r[0]))
+                    if isExists_dir == True:
+                        if isExists_dir_dir == True:
+                            for x in os.listdir('webscan/{0}'.format(r[0])):
+                                file_data = 'webscan/{0}'.format(r[0]) + '\\' + x
+                                if os.path.isfile(file_data) == True:
+                                    os.remove(file_data)
+                            else:
+                                pass
+                        else:
+                            os.mkdir('./webscan/{0}'.format(r[0]))
+                    else:
+                        os.mkdir('webscan')
+                    with open('webscan/{0}/{0}{1}.json'.format(r[0], i), 'a+', encoding='utf-8') as w:
+                        time.sleep(0.1)
+                        w.write(web)
+                    time.sleep(0.5)
+                    if urls == []:
+                        with open('webscan/{0}/{0}{1}.json'.format(r[0], i), 'r+', encoding='utf-8') as f:
+                            for file in f.readlines():
+                                ips = re.findall('"ip": \["(.+?)"],', file)
+                                for x in tqdm(range(len(ips))):
+                                    with open('webscan/{0}/url{1}.txt'.format(r[0], i), 'a+', encoding='utf-8') as w_f:
+                                            w_f.write("{0}\n".format(ips[x]))
+                    else:
+                            with open('webscan/{0}/{0}{1}.json'.format(r[0], i), 'r+', encoding='utf-8') as f:
+                                for file in f.readlines():
+                                    url_list = re.findall('"url": "(.+?)",', file)
+                                    for x in tqdm(range(len(url_list))):
+                                        with open('webscan/{0}/url{1}.txt'.format(r[0], i), 'a+', encoding='utf-8') as w_f:
+                                            w_f.write("{0}\n".format(url_list[x]))
+                    print("")
+                else:
+                    return "缺少参数哦！"
         return "web资产收集完成！请开始您的渗透之旅吧~"
     else:
         return "您的额度不够，请充值或更换账号！"
@@ -119,15 +213,26 @@ def domain(headers):
         else:
             page = page
         domain_scan = 'https://api.zoomeye.org/domain/search?'
-        q = 'q=' + input("""
-请输入查询关键字(必填，例子：baidu.com)：""")
+        with open("./lib/edu.txt", "r", encoding="utf-8") as file:
+            for files in file.readlines():
+                edu = files.split("\n")
+                q = 'q=' + edu[0]
         type = 'type=' + input("""
 0：搜索关联域名，1：搜索子域名
 请输入类型(必填，类型有：0 或 1)：""")
+        while True:
+            if type == 'type=':
+                type = 'type=' + input("""
+0：搜索关联域名，1：搜索子域名
+请输入类型(必填，类型有：0 或 1)：""")
+            else:
+                break
         for i in range(1, int(page) + 1):
             page = str(i)
             urls = domain_scan + q + '&' + 'page=' + page + '&' + type
             domainscan = requests.get(url=urls,headers=headers)
+            domain = re.findall('"name"', domainscan.text)
+            # print(len(domain))
             domainscan.encoding = "utf-8"
             isExists_dir = os.path.exists('domainscan')
             isExists_file = os.path.exists('domainscan/domainscan{0}.json'.format(i))
@@ -137,10 +242,16 @@ def domain(headers):
                 pass
             else:
                 os.mkdir('domainscan')
-            for j in tqdm(range(100)):
-                with open('domainscan/domainscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
-                    time.sleep(0.1)
-                    w.write(domainscan.text)
+            # for j in tqdm(range(len(domain))):
+            with open('domainscan/domainscan{0}.json'.format(i), 'a+', encoding='utf-8') as w:
+                time.sleep(0.1)
+                w.write(domainscan.text)
+            with open('domainscan/domainscan{0}.json'.format(i), 'r+', encoding='utf-8') as f:
+                for file in f.readlines():
+                    ips = re.findall('"name": "(.+?)",', file)
+                    for x in tqdm(range(len(domain))):
+                        with open('domainscan/url{0}.txt'.format(i), 'a+', encoding='utf-8') as w_f:
+                            w_f.write("{0}\n".format(ips[x]))
             print("")
         return "域名 / IP资产收集完成！请开始您的渗透之旅吧~"
     else:
