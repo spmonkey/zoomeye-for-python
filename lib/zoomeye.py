@@ -300,7 +300,7 @@ def host(headers):
             facets = facets
         sub_type = input("""
 数据类型：ipv4,ipv6
-请输入数据类型(可选，例子：sub_type:v4): """)
+请输入数据类型(可选，例子：sub_type:ipv4): """)
         if sub_type == '':
             sub_types = 'sub_type:ipv4,ipv6'
         else:
